@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import './App.css';
 
 class Box extends React.Component {
@@ -20,7 +20,7 @@ class Box extends React.Component {
 
 class Grid extends Component{
   render(){
-    const width = this.props.cols * 15;
+    const width = (this.props.cols * 16)+1;
     var rowsArr = [];
 
     var boxClass = "";
@@ -34,15 +34,14 @@ class Grid extends Component{
               key = {boxId}
               boxId = {boxId}
               col = {j}
-              rows = {i}
+              row = {i}
               selectBox = {this.props.selectBox}
           />
         );
       }
     }
     return(
-      <div className =" grid" style= 
-      {{width: width}}>
+      <div className =" grid" style= {{width: width}}>
         {rowsArr}
       </div>
     )
@@ -59,6 +58,13 @@ class App extends React.Component {
 			generation: 0,
 			gridFull: Array(this.rows).fill().map(() => Array(this.cols).fill(false))
 		}
+  }
+  selectBox = (row, col) => {
+		let gridCopy = arrayClone(this.state.gridFull);
+		gridCopy[row][col] = !gridCopy[row][col];
+		this.setState({
+			gridFull: gridCopy
+		});
 	}
 
   render(){
@@ -75,6 +81,10 @@ class App extends React.Component {
       </div>
     );
   }
+}
+
+function arrayClone(arr){
+	return JSON.parse(JSON.stringify(arr));
 }
 
 export default App;
