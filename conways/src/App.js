@@ -21,12 +21,11 @@ class Buttons extends React.Component {
 		return (
 			<div className="center">
 				<ButtonToolbar>
-					<button className="btn btn-default" onClick={this.props.playButton}>
-						Play
-					</button>
-          <button className="btn btn-default" onClick={this.props.clear}>
-					  Clear
-					</button>
+					<button className="btn btn-default" onClick={this.props.playButton}> Play </button>
+          <button className="btn btn-default" onClick={this.props.pause} > Pause </button>
+          <button className="btn btn-default" onClick={this.props.clear}> Clear </button>
+          <button className="btn btn-default" onClick={this.props.restart} > Restart </button>
+          
         </ButtonToolbar>
       </div>
       )
@@ -76,13 +75,13 @@ class App extends React.Component {
 			gridFull: Array(this.rows).fill().map(() => Array(this.cols).fill(false))
 		}
   }
-  selectBox = (row, col) => {
-		let gridCopy = arrayClone(this.state.gridFull);
-		gridCopy[row][col] = !gridCopy[row][col];
-		this.setState({
-			gridFull: gridCopy
-		});
-  }
+  // selectBox = (row, col) => {
+	// 	let gridCopy = arrayClone(this.state.gridFull);
+	// 	gridCopy[row][col] = !gridCopy[row][col];
+	// 	this.setState({
+	// 		gridFull: gridCopy
+	// 	});
+  // }
   selectRandomBox = () => {
 		let gridCopy = arrayClone(this.state.gridFull);
 		for (let i = 0; i < this.rows; i++) {
@@ -130,8 +129,14 @@ class App extends React.Component {
 	}
   playButton = () => {
 		clearInterval(this.intervalId);
-    this.intervalId = setInterval(this.playByRole, 1000);
+    this.intervalId = setInterval(this.playByRole, 100);
   }
+  restart = () => {
+    window.location.reload();
+    clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.playByRole, 100);
+  }
+
   pauseButton = () => {
 		clearInterval(this.intervalId);
 	}
@@ -146,6 +151,8 @@ class App extends React.Component {
           <Buttons
             playButton={this.playButton}
             clear={this.clear}
+            restart = {this.restart}
+            pause ={this.pauseButton}
           />
           <Grid 
             gridFull = {this.state.gridFull}
