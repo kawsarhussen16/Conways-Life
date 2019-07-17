@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 // import ReactDOM from 'react-dom';
 import './App.css';
-
+import {ButtonToolbar} from 'react-bootstrap';
 class Box extends React.Component {
 	selectBox = () => {
 		this.props.selectBox(this.props.row, this.props.col);
 	}
-
 	render() {
 		return (
 			<div
@@ -17,7 +16,25 @@ class Box extends React.Component {
 		);
 	}
 }
+class Buttons extends React.Component {
+	render() {
+		return (
+			<div className="center">
+				<ButtonToolbar>
+					<button className="btn btn-default" onClick={this.props.playButton}>
+						Play
+					</button>
+          <button className="btn btn-default" onClick={this.props.clear}>
+					  Clear
+					</button>
+        </ButtonToolbar>
+      </div>
+      )
+    }
+}
 
+
+    
 class Grid extends Component{
   render(){
     const width = (this.props.cols * 16)+1;
@@ -78,14 +95,58 @@ class App extends React.Component {
 		this.setState({
 			gridFull: gridCopy
 		});
+  }
+  clear = () => {
+		var grid = Array(this.rows).fill().map(() => Array(this.cols).fill(false));
+		this.setState({
+			gridFull: grid,
+			generation: 0
+		});
+  }
+  playByRole = () => {
+		let g = this.state.gridFull;
+		let g2 = arrayClone(this.state.gridFull);
+
+		for (let i = 0; i < this.rows; i++) {
+		  for (let j = 0; j < this.cols; j++) {
+		    let count = 0;
+		    if (i > 0) if (g[i - 1][j]) count++;
+		    if (i > 0 && j > 0) if (g[i - 1][j - 1]) count++;
+		    if (i > 0 && j < this.cols - 1) if (g[i - 1][j + 1]) count++;
+		    if (j < this.cols - 1) if (g[i][j + 1]) count++;
+		    if (j > 0) if (g[i][j - 1]) count++;
+		    if (i < this.rows - 1) if (g[i + 1][j]) count++;
+		    if (i < this.rows - 1 && j > 0) if (g[i + 1][j - 1]) count++;
+		    if (i < this.rows - 1 && j < this.cols - 1) if (g[i + 1][j + 1]) count++;
+		    if (g[i][j] && (count < 2 || count > 3)) g2[i][j] = false;
+		    if (!g[i][j] && count === 3) g2[i][j] = true;
+		  }
+		}
+		this.setState({
+		  gridFull: g2,
+		  generation: this.state.generation + 1
+		});
+
+	}
+  playButton = () => {
+		clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.playByRole, 1000);
+  }
+  pauseButton = () => {
+		clearInterval(this.intervalId);
 	}
   componentDidMount(){
     this.selectRandomBox();
+    this.playButton();
   }
   render(){
     return (
       <div className="App">
           <h1> The Game of Life</h1>
+          <Buttons
+            playButton={this.playButton}
+            clear={this.clear}
+          />
           <Grid 
             gridFull = {this.state.gridFull}
             rows = {this.rows}
